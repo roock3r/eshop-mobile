@@ -24,13 +24,22 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   shared_preferences: ^0.5.3+4
-  flutter_facebook_login: ^1.1.1
+  flutter_facebook_login: ^3.0.0
+  flutter_screenutil: ^1.1.0
+  font_awesome_flutter: ^8.7.0
+  provider: ^3.0.0
   http: ^0.12.0+4
+  intl: ^0.16.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.7.3"
 
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "images/icon/bigshop_master_01.jpg"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -44,8 +53,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #  - images/a_dot_burr.jpeg
+  assets:
+    - images/gro.jpg
+    - images/gro.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

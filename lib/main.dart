@@ -110,188 +110,57 @@
 //  }
 //}
 
-import 'dart:convert';
-
-import 'package:bigshop/common/functions/getToken.dart';
-import 'package:bigshop/common/functions/saveCurrentAPPLogin.dart';
-import 'package:bigshop/common/functions/saveCurrentFBLogin.dart';
-import 'package:bigshop/models/json/fbloginModel.dart';
+//import 'package:bigshop/common/helpers/cartBloc.dart';
+import 'package:bigshop/models/json/appShopModel.dart';
+import 'package:bigshop/pages/cart.dart';
+import 'package:bigshop/pages/home.dart';
+import 'package:bigshop/pages/item.dart';
+import 'package:bigshop/pages/items.dart';
+import 'package:bigshop/pages/orders.dart';
+import 'package:bigshop/pages/splash.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:http/http.dart' as http;
-import 'package:bigshop/common/functions/getID.dart';
+import 'package:bigshop/pages/login.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(LoginPage());
-}
+import 'common/providers/cart.dart';
+import 'common/providers/orders.dart';
+import 'models/json/appShopItemModel.dart';
 
-class LoginPage extends StatefulWidget {
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
+void main() => runApp(BigShopApp());
 
-class _LoginPageState extends State<LoginPage> {
-  bool isLoggedIn = false;
-  var profileData;
-  var userData;
-
-  var facebookLogin = FacebookLogin();
-
-  void onLoginStatusChanged(bool isLoggedIn, {profileData,userData}) {
-    setState(() {
-      this.isLoggedIn = isLoggedIn;
-      this.profileData = profileData;
-      this.userData = userData;
-    });
-  }
-
-
+class BigShopApp extends StatelessWidget {
+  int shopId;
+  int itemId;
+  String shopName;
+  String itemName;
+  Shop shop;
+  Item item;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Facebook Login"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.exit_to_app,
-                color: Colors.white,
-              ),
-              onPressed: () => facebookLogin.isLoggedIn
-                  .then((isLoggedIn) => isLoggedIn ? _logout() : {}),
-            ),
-          ],
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(
+          value: Cart(),
         ),
-        body: Container(
-          child: Center(
-            child: isLoggedIn
-                ? _displayUserData(profileData,userData)
-                : _displayLoginButton(),
-          ),
-        ),
-      ),
-      theme: ThemeData(
-        fontFamily: 'Raleway',
-        textTheme: Theme.of(context).textTheme.apply(
-          bodyColor: Colors.black,
-          displayColor: Colors.grey[600],
-        ),
-        // This colors the [InputOutlineBorder] when it is selected
-        primaryColor: Colors.blue[500],
-        textSelectionHandleColor: Colors.blue[500],
-      ),
-    );
-  }
-
-  void initiateFacebookLogin() async {
-    var facebookLoginResult =
-    await facebookLogin.logInWithReadPermissions(['email']);
-
-    switch (facebookLoginResult.status) {
-      case FacebookLoginStatus.error:
-        onLoginStatusChanged(false);
-        break;
-      case FacebookLoginStatus.cancelledByUser:
-        onLoginStatusChanged(false);
-        break;
-      case FacebookLoginStatus.loggedIn:
-        var graphResponse = await http.get(
-            'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,gender,birthday,email,picture.width(400)&access_token=${facebookLoginResult
-                .accessToken.token}');
-        print(facebookLoginResult.accessToken.token);
-
-        var profile = json.decode(graphResponse.body);
-        var user = new FbLoginModel.fromJson(profile);
-        saveCurrentFBLogin(profile);
-        print(profile.toString());
-
-//        Map<String, String> params = {
-//          'grant_type': 'convert_token',
-//          'client_id': 'Y46VUjckBE1I41WV1dY8PVHZHqVty0GwagTOuujK',
-//          'client_secret': 'TI0i3lYvP9zmqufsd5BhzjzQoZTuWoRncJSbHvWYiImg7A3o8j51jksFtIlcUbVGv2KoTXHPe4FnZx8D6manJiRGWtsNngCWAiYDjd15h42Cv82Mt0ksAqmc3gelfN0D',
-//          'backend':'facebook',
-//          'token': facebookLoginResult.accessToken.token,
-//          'user_type': 'customer'
-//        };
-
-        Map<String, String> params = {
-          'grant_type': 'convert_token',
-          'client_id': 'tTnUFMqsa8e6HBfz2K4cI8nDHl8xANhl0t89ZgHG',
-          'client_secret': 'GsvfO5RrepUauvV0mbsI0dEtyAHwPiaJ0kRFpaxqxZUpxRHRr6HI8Fy4yHcEwUJaZB8WveS2x0vR31lGnP24GpAqSG0A9GBMVKKbLugvlY3exWaND7imKtMUAVsRhEEz',
-          'backend':'facebook',
-          'token': facebookLoginResult.accessToken.token,
-          'user_type': 'customer'
-        };
-
-        var yohbiteResponse = await http.post('https://yohbite.silvatech.org/api/social/convert-token/?grant_type=${params['grant_type']}&client_id=${params['client_id']}&client_secret=${params['client_secret']}&backend=${params['backend']}&token=${params['token']}&user_type=${params['user_type']}');
-        var ybprofile = json.decode(yohbiteResponse.body);
-        saveCurrentAPPLogin(ybprofile);
-        print(ybprofile.toString());
-
-        var id;
-        var result = await getID().then((result) {
-          id = result;
-        });
-        print("FB ${id}");
-
-        var token;
-        var newResult = await getToken().then((newResult){
-          token = newResult;
-        });
-
-        print("APP ${token}");
-
-        onLoginStatusChanged(true, profileData: profile, userData: ybprofile);
-        break;
-    }
-  }
-
-  _displayUserData(profileData,userData) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Container(
-          height: 200.0,
-          width: 200.0,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-              fit: BoxFit.fill,
-              image: NetworkImage(
-                profileData['picture']['data']['url'],
-              ),
-            ),
-          ),
-        ),
-        SizedBox(height: 28.0),
-        Text(
-          "FBID ${profileData['id']}\n${profileData['name']}\n${profileData['email']}",
-          style: TextStyle(
-            fontSize: 20.0,
-            letterSpacing: 1.1,
-          ),
-          textAlign: TextAlign.center,
+        ChangeNotifierProvider.value(
+          value: Orders(),
         ),
       ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Big Shop Belize',
+        routes: <String, WidgetBuilder>{
+          "/loginScreen": (BuildContext context) => LoginPage(),
+          "/home": (BuildContext context) => HomePage(),
+          "/items": (BuildContext context) => ItemsPage(shopId,shopName,shop),
+          "/item": (BuildContext context) => ItemPage(itemId,itemName,shop,item),
+          "/cart": (BuildContext context) => CartPage(),
+          "/orders": (BuildContext context) => OrdersPage(),
+          "/splash": (BuildContext context) => SplashPage(),
+        },
+        home: LoginPage(),
+      ),
     );
   }
-
-  _displayLoginButton() {
-    return RaisedButton(
-      child: Text("Login with Facebook"),
-      onPressed: () => initiateFacebookLogin(),
-      color: Colors.blue,
-      textColor: Colors.white,
-    );
-  }
-
-  _logout() async {
-    await facebookLogin.logOut();
-    onLoginStatusChanged(false);
-    print("Logged out");
-  }
-
-
 }
