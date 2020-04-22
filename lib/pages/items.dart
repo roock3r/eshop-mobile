@@ -80,10 +80,7 @@ class _ItemsPageState extends State<ItemsPage> {
         setState(() {
           if(response.statusCode == 200){
             final list = json.decode(response.body);
-            print('${list}');
-            print('${shop.name}');
             var items = list['meals'].map<Item>((json) => Item.fromJson(json)).toList();
-//            shops.sort((b,a) => a.id.compareTo(b.id));
             _items = items;
           }else{
             badStatusCode(response);

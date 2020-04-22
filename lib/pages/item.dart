@@ -36,11 +36,6 @@ class _ItemPageState extends State<ItemPage> {
 
   @override
   Widget build(BuildContext context) {
-//    var bloc = Provider.of<CartBloc>(context);
-//    int totalCount = 0;
-//    if (bloc.cart.length > 0) {
-//      totalCount = bloc.cart.values.reduce((a, b) => a + b);
-//    }
     // TODO: implement build
     final cart = Provider.of<Cart>(context, listen: false);
     final ThemeData theme = Theme.of(context);
@@ -102,30 +97,11 @@ class _ItemPageState extends State<ItemPage> {
                 width: 30.0,
                 child: new GestureDetector(
                   onTap: () {
-                    /*Navigator.of(context).push(
-                  new MaterialPageRoute(
-                      builder:(BuildContext context) =>
-                      new CartItemsScreen()
-                  )
-              );*/
+
                   },
                   child: Stack(
                     children: <Widget>[
-//                      Consumer<Cart>(
-//                        builder: (_, cart, ch) => Badge(
-//                          child: ch,
-//                          value: cart.itemCount.toString(),
-//                        ),
-//                        child: IconButton(
-//                          icon: new Icon(
-//                            Icons.shopping_cart,
-//                            color: Colors.black,
-//                          ),
-//                          onPressed: (){
-//                            //Navigator.push(context, MaterialPageRoute(builder: (context) =>Checkout()));
-//                            Navigator.push(context, MaterialPageRoute(builder: (context)=> CartPage()));
-//                          }),
-//                      ),
+
                       new IconButton(
                           icon: new Icon(
                             Icons.shopping_cart,
@@ -188,42 +164,9 @@ class _ItemPageState extends State<ItemPage> {
                                     children: <Widget>[
                                       new Container(
                                         child: Image.network('${item.image}'),
-//                                        child: new Carousel(
-//                                          images: [
-//                                            new AssetImage(
-//                                              'images/apple.jpg',
-//                                              // package: destination.assetPackage,
-//                                            ),
-//                                            new AssetImage(
-//                                              'images/tomato.jpg',
-//                                              // package: destination.assetPackage,
-//                                            ),
-//                                            new AssetImage(
-//                                              'images/lemons.jpg',
-//                                              // package: destination.assetPackage,
-//                                            ),
-//                                            new AssetImage(
-//                                              'images/kiwi.jpg',
-//                                              // package: destination.assetPackage,
-//                                            ),
-//                                            new AssetImage(
-//                                              'images/guava.jpg',
-//                                              // package: destination.assetPackage,
-//                                            ),
-//                                            new AssetImage(
-//                                              'images/grapes.jpg',
-//                                              // package: destination.assetPackage,
-//                                            ),
-//                                          ],
-//                                          boxFit: BoxFit.scaleDown,
-//                                          showIndicator: false,
-//
-//                                          autoplay: false,
-//                                        ),
                                       )
                                     ],
                                   ),
-
                                 ),
                               ]),
                         ),
@@ -333,16 +276,6 @@ class _ItemPageState extends State<ItemPage> {
                                                         },
                                                       ),
                                                     ));
-//                                                    Scaffold.of(context).showSnackBar(SnackBar(
-//                                                      content: Text('Add item to cart'),
-//                                                      duration: Duration(seconds: 2),
-//                                                      action: SnackBarAction(
-//                                                        label: 'UNDO',
-//                                                        onPressed: () {
-//                                                          cart.removeSingleItem(item.id.toString());
-//                                                        },
-//                                                      ),
-//                                                    ));
                                                   },
                                                   shape: new OutlineInputBorder(
                                                     borderRadius: BorderRadius.circular(30.0),
@@ -387,13 +320,11 @@ class _ItemPageState extends State<ItemPage> {
                               style: TextStyle(fontSize: 13.0,color: Colors.black38)
                           )
                       ),
-
                     ]
                 )
             )
         )
     );
-
     //return Container();
   }
 }

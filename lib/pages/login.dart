@@ -47,33 +47,6 @@ class _LoginPageState extends State<LoginPage> {
     await preferences.setString('LastScreenRoute', lastRoute);
   }
 
-
-//  @override
-//  Widget build(BuildContext context) {
-//    return
-//       Scaffold(
-//        appBar: AppBar(
-//          title: Text("Bigshop Login"),
-//          actions: <Widget>[
-//            IconButton(
-//              icon: Icon(
-//                Icons.exit_to_app,
-//                color: Colors.white,
-//              ),
-//              onPressed: () => facebookLogin.isLoggedIn
-//                  .then((isLoggedIn) => isLoggedIn ? _logout() : {}),
-//            ),
-//          ],
-//        ),
-//        body: Container(
-//          child: Center(
-//            child: isLoggedIn
-//                ? _displayUserData(profileData,userData)
-//                : _displayLoginButton(),
-//          ),
-//        ),
-//      );
-//  }
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context) ;
@@ -99,11 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: new Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-//                          new Icon(
-//                            image: Image.asset('images/gro.jpg'),
-//                            color: Colors.white,
-//                            size: ScreenUtil().setSp(180.0),
-//                          ),
+
                           new Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
@@ -147,33 +116,6 @@ class _LoginPageState extends State<LoginPage> {
                               color: Colors.white, fontWeight: FontWeight.w500),
                         ),
                         new SizedBox(height: ScreenUtil().setHeight(50.0)),
-//                        new Container(
-//                          width: double.infinity,
-//                          height: ScreenUtil().setHeight(105.0),
-//                          child: new RaisedButton(
-//                            shape: new RoundedRectangleBorder(
-//                                borderRadius: BorderRadius.circular(90.0)),
-//                            color: Colors.white,
-//                            elevation: 0.0,
-//                            onPressed: () {
-//                              Navigator.push(
-//                                  context,
-//                                  MaterialPageRoute(
-//                                      builder: (context) =>
-//                                          PhoneNumberScreen()));
-//                            },
-//                            child: new Row(
-//                              mainAxisAlignment: MainAxisAlignment.center,
-//                              children: <Widget>[
-//                                new Text(
-//                                  "LOG IN WITH PHONE NUMBER",
-//                                  style: new TextStyle(
-//                                      color: Colors.grey, wordSpacing: 1.2),
-//                                )
-//                              ],
-//                            ),
-//                          ),
-//                        ),
                         new SizedBox(height: ScreenUtil().setHeight(30.0)),
                         new Container(
                           width: double.infinity,
@@ -184,12 +126,6 @@ class _LoginPageState extends State<LoginPage> {
                             color: Colors.white,
                             elevation: 0.0,
                             onPressed: () => initiateFacebookLogin(),
-//                                () {
-//                              var snkBAr = new SnackBar(
-//                                  content: new Text(
-//                                      "You can add this feature dev 😍"));
-//
-//                            },
                             child: new Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
@@ -222,7 +158,6 @@ class _LoginPageState extends State<LoginPage> {
   void initiateFacebookLogin() async {
     facebookLogin.loginBehavior = FacebookLoginBehavior.webViewOnly;
     var facebookLoginResult =
-//    await facebookLogin.logInWithReadPermissions(['email']);
     await facebookLogin.logIn(['email']);
 
 

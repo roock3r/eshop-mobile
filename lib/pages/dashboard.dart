@@ -66,16 +66,11 @@ class _DashboardPageState extends State<DashboardPage> {
     _showPleaseWait(true);
     try{
       requestShopAPI.loadAndParseShops().then((response){
-
-
         setState(() {
           if(response.statusCode == 200){
             final list = json.decode(response.body);
-            print('${list}');
             var shops = list['restaurants'].map<Shop>((json) => Shop.fromJson(json)).toList();
-//            shops.sort((b,a) => a.id.compareTo(b.id));
             _shops = shops;
-            print('${_shops}');
           }else{
             badStatusCode(response);
           }
@@ -137,40 +132,4 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
-
-//  var shops = new List<Shop>();
-//
-//  _getUsers() {
-//    requestShopAPI.getUsers().then((response) {
-//      setState(() {
-//        final list = json.decode(response.body);
-//        print('${list}');
-//        shops = list['restaurants'].map<Shop>((json) => Shop.fromJson(json)).toList();
-//      });
-//    });
-  }
-
-//  initState() {
-//    super.initState();
-//    _getUsers();
-//  }
-//
-//  dispose() {
-//    super.dispose();
-//  }
-//
-//  @override
-//  build(context) {
-//    return Scaffold(
-//        appBar: AppBar(
-//          title: Text("Shops List"),
-//        ),
-//        body: ListView.builder(
-//          itemCount: shops.length,
-//          itemBuilder: (context, index) {
-//            return ListTile(title: Text(shops[index].name));
-//          },
-//        ));
-//  }
-//}
+}
