@@ -99,10 +99,12 @@ class _DashboardPageState extends State<DashboardPage> {
         itemBuilder: (context, index) {
           Shop shop = _shops[index];
           return ListTile(
+            leading: FlutterLogo(size: 72.0),
             title: Text('${shop.name}'),
-            subtitle: Text('Price: ${shop.address}'),
+            subtitle: Text('Address: ${shop.address} , Location: ${shop.location_info}, District: ${shop.district_info}'),
             trailing: Icon(Icons.arrow_right),
             onTap: () => _navigateToShop(context, shop.id, shop.name, shop),
+            isThreeLine: true,
 //            onLongPress: () => _deleteEmployee(context, employee),
           );
         });

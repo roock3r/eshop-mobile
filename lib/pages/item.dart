@@ -176,25 +176,49 @@ class _ItemPageState extends State<ItemPage> {
                           padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
                           child: DefaultTextStyle(
                               style: descriptionStyle,
+                              child: FittedBox (
+                                  child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    // three line description
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 8.0),
+                                      child: Text(
+                                        item.name,
+                                        style: descriptionStyle.copyWith(
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              )
+                          )
+                      ),
+
+                      Container(
+                          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
+                          child: DefaultTextStyle(
+                              style: descriptionStyle,
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  // three line description
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 8.0),
                                     child: Text(
-                                      item.name,
+                                      'Price: ',
                                       style: descriptionStyle.copyWith(
                                           fontSize: 20.0,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black87),
+                                          color: Colors.black54),
                                     ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 8.0),
                                     child: Text(
-                                      'Price \$ ${item.price}',
+                                      '\$${item.price}',
                                       style: descriptionStyle.copyWith(
                                           fontSize: 20.0,
                                           color: Colors.black54),
@@ -204,6 +228,8 @@ class _ItemPageState extends State<ItemPage> {
                               )
                           )
                       ),
+
+
                       Container(
                           margin: EdgeInsets.all(10.0),
                           child: Card(
@@ -316,6 +342,14 @@ class _ItemPageState extends State<ItemPage> {
                           padding: const EdgeInsets.fromLTRB(20.0, 10.0, 10.0, 0.0),
 
                           child: Text("${item.shortDescription}",
+                              maxLines: 10,
+                              style: TextStyle(fontSize: 13.0,color: Colors.black38)
+                          )
+                      ),
+                      Container(
+                          padding: const EdgeInsets.fromLTRB(20.0, 10.0, 10.0, 0.0),
+
+                          child: Text("${cart.currentshopId}",
                               maxLines: 10,
                               style: TextStyle(fontSize: 13.0,color: Colors.black38)
                           )

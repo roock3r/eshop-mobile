@@ -38,7 +38,7 @@ class requestShopAPI extends InheritedWidget {
 //    }
 //  }
   static Future loadAndParseShops() {
-    var url = '${_BASE_URL}/shop';
+    var url = '${_BASE_URL}/shops';
     return http.get(url);
   }
 

@@ -38,7 +38,7 @@ class requestItemsAPI extends InheritedWidget {
 //    }
 //  }
   static Future loadAndParseItems(int _shopid) {
-    var url = '${_BASE_URL}/items/${_shopid}';
+    var url = '${_BASE_URL}/shop/${_shopid}';
     return http.get(url);
   }
 

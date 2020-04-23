@@ -1,24 +1,9 @@
 import 'package:flutter/cupertino.dart';
-
-class CartItem {
-  final String id;
-  final String itemId;
-  final int shopId;
-  final String title;
-  final int quantity;
-  final double price;
-
-  CartItem({
-    @required this.id,
-    @required this.itemId,
-    @required this.shopId,
-    @required this.title,
-    @required this.quantity,
-    @required this.price,
-  });
-}
+import 'package:bigshop/models/json/appShopCartItemModel.dart';
 
 class Cart with ChangeNotifier {
+  int currentshopId;
+
   Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items {
@@ -38,33 +23,92 @@ class Cart with ChangeNotifier {
   }
 
   void addItem(String productId, int shopId, double price, String title) {
-    if (_items.containsKey(productId)) {
-      //change quantity.....
-
-      _items.update(
-        productId,
-            (existingCartItem) => CartItem(
-          id: existingCartItem.id,
-          itemId: existingCartItem.itemId,
-          shopId: existingCartItem.shopId,
-          title: existingCartItem.title,
-          price: existingCartItem.price,
-          quantity: existingCartItem.quantity + 1,
-        ),
-      );
-    } else {
-      _items.putIfAbsent(
-        productId,
-            () => CartItem(
-          id: DateTime.now().toString(),
-          itemId: productId,
-          shopId: shopId,
-          title: title,
-          price: price,
-          quantity: 1,
-        ),
-      );
+    if (currentshopId == null) {
+      currentshopId = shopId;
+      print(currentshopId);
+      print(shopId);
+      if (_items.containsKey(productId)) {
+        //change quantity.....
+        _items.update(
+          productId,
+              (existingCartItem) => CartItem(
+            id: existingCartItem.id,
+            itemId: existingCartItem.itemId,
+            shopId: existingCartItem.shopId,
+            title: existingCartItem.title,
+            price: existingCartItem.price,
+            quantity: existingCartItem.quantity + 1,
+          ),
+        );
+      } else {
+        _items.putIfAbsent(
+          productId,
+              () => CartItem(
+            id: DateTime.now().toString(),
+            itemId: productId,
+            shopId: shopId,
+            title: title,
+            price: price,
+            quantity: 1,
+          ),
+        );
+      }
+    } else if ( currentshopId == shopId ) {
+      if (_items.containsKey(productId)) {
+        //change quantity.....
+        _items.update(
+          productId,
+              (existingCartItem) => CartItem(
+            id: existingCartItem.id,
+            itemId: existingCartItem.itemId,
+            shopId: existingCartItem.shopId,
+            title: existingCartItem.title,
+            price: existingCartItem.price,
+            quantity: existingCartItem.quantity + 1,
+          ),
+        );
+      } else {
+        _items.putIfAbsent(
+          productId,
+              () => CartItem(
+            id: DateTime.now().toString(),
+            itemId: productId,
+            shopId: shopId,
+            title: title,
+            price: price,
+            quantity: 1,
+          ),
+        );
+      }
+    } else if (shopId != shopId) {
+      return null;
     }
+//    if (_items.containsKey(productId)) {
+//      //change quantity.....
+//      _items.update(
+//        productId,
+//            (existingCartItem) => CartItem(
+//          id: existingCartItem.id,
+//          itemId: existingCartItem.itemId,
+//          shopId: existingCartItem.shopId,
+//          title: existingCartItem.title,
+//          price: existingCartItem.price,
+//          quantity: existingCartItem.quantity + 1,
+//        ),
+//      );
+//    } else {
+//      _items.putIfAbsent(
+//        productId,
+//            () => CartItem(
+//          id: DateTime.now().toString(),
+//          itemId: productId,
+//          shopId: shopId,
+//          title: title,
+//          price: price,
+//          quantity: 1,
+//        ),
+//      );
+//    }
     notifyListeners();
   }
 
@@ -74,6 +118,7 @@ class Cart with ChangeNotifier {
   }
 
   void clear() {
+    currentshopId = null;
     _items = {};
     notifyListeners();
   }
