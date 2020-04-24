@@ -1,4 +1,3 @@
-//import 'package:bigshop/common/helpers/cartBloc.dart';
 import 'package:bigshop/common/providers/cart.dart';
 import 'package:bigshop/common/widgets/pleaseWaitWidget.dart';
 import 'package:bigshop/models/json/appShopItemModel.dart';
@@ -33,6 +32,30 @@ class _ItemPageState extends State<ItemPage> {
 
   _ItemPageState(this._itemId,this._itemName,this.shop,this.item);
 
+    void _incrementQty() {
+    setState(() {
+      qty++;
+    });
+  }
+
+  void _decrementQty() {
+    setState(() {
+      if(qty == 0 || qty < 0){
+
+      }
+      else {
+        qty--;
+      }
+    });
+  }
+
+  void _resetQty() {
+    setState(() {
+
+        qty = 0;
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +99,9 @@ class _ItemPageState extends State<ItemPage> {
       assert(false);
       return null;
     }
+
+    // set up the button
+
     return new Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -248,7 +274,7 @@ class _ItemPageState extends State<ItemPage> {
                                                 icon: Icon(_add_icon(),color: Colors.amber.shade500),
                                                 onPressed: () {
 
-                                                  qty = qty + 1;
+                                                  _incrementQty();
 
                                                 },
                                               ),
@@ -256,7 +282,7 @@ class _ItemPageState extends State<ItemPage> {
                                                 margin: EdgeInsets.only(left:2.0),
                                               ),
                                               Text(
-                                                qty.toString(),
+                                                '$qty',
                                                 style: descriptionStyle.copyWith(
                                                     fontSize: 20.0,
                                                     color: Colors.black87),
@@ -267,12 +293,7 @@ class _ItemPageState extends State<ItemPage> {
                                               new IconButton(
                                                 icon: Icon(_sub_icon(),color: Colors.amber.shade500),
                                                 onPressed: () {
-                                                  if(qty<0){
-
-                                                  }
-                                                  else{
-                                                    qty = qty -1;
-                                                  }
+                                                  _decrementQty();
                                                 },
                                               ),
                                             ],
@@ -287,21 +308,48 @@ class _ItemPageState extends State<ItemPage> {
                                                   child: const Text('Add'),
                                                   textColor: Colors.amber.shade500,
                                                   onPressed: () {
-                                                   // bloc.addToCart(item.id, item.id.toString(), item.price, item.name);
-                                                    //Navigator.push(context, MaterialPageRoute(builder: (context)=> Cart_screen()));
-                                                    cart.addItem(item.id.toString(), shop.id, item.price, item.name);
-                                                    _scaffoldKey.currentState.hideCurrentSnackBar();
-//                                                    Scaffold.of(context).hideCurrentSnackBar();
-                                                    _scaffoldKey.currentState.showSnackBar(SnackBar(
-                                                      content: Text('Add item to cart'),
-                                                      duration: Duration(seconds: 2),
-                                                      action: SnackBarAction(
-                                                        label: 'UNDO',
-                                                        onPressed: () {
-                                                          cart.removeSingleItem(item.id.toString());
-                                                        },
-                                                      ),
-                                                    ));
+                                                    if((cart.currentshopId == null) || (cart.currentshopId == shop.id) ) {
+                                                      cart.addItem(item.id.toString(), shop.id, item.price, item.name);
+                                                      _resetQty();
+                                                      _scaffoldKey.currentState.hideCurrentSnackBar();
+                                                      _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                                        content: Text('Add item to cart'),
+                                                        duration: Duration(seconds: 2),
+                                                        action: SnackBarAction(
+                                                          label: 'UNDO',
+                                                          onPressed: () {
+                                                            cart.removeSingleItem(item.id.toString());
+                                                            _resetQty();
+                                                          },
+                                                        ),
+                                                      ));
+                                                    }else {
+                                                      _scaffoldKey.currentState.hideCurrentSnackBar();
+                                                      _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                                        content: Text('You are adding an item from another shop would you like to clear your cart for this current store and add this item for this store in your cart ?'),
+                                                        duration: Duration(seconds: 5),
+                                                        action: SnackBarAction(
+                                                          label: 'Reset Cart',
+                                                          onPressed: () {
+                                                            cart.clear();
+                                                            cart.addItem(item.id.toString(), shop.id, item.price, item.name);
+                                                            _resetQty();
+                                                            _scaffoldKey.currentState.hideCurrentSnackBar();
+                                                            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                                              content: Text('Add item to cart'),
+                                                              duration: Duration(seconds: 2),
+                                                              action: SnackBarAction(
+                                                                label: 'UNDO',
+                                                                onPressed: () {
+                                                                  cart.removeSingleItem(item.id.toString());
+                                                                  _resetQty();
+                                                                },
+                                                              ),
+                                                            ));
+                                                          },
+                                                        ),
+                                                      ));
+                                                    }
                                                   },
                                                   shape: new OutlineInputBorder(
                                                     borderRadius: BorderRadius.circular(30.0),
@@ -340,16 +388,7 @@ class _ItemPageState extends State<ItemPage> {
                       ),
                       Container(
                           padding: const EdgeInsets.fromLTRB(20.0, 10.0, 10.0, 0.0),
-
                           child: Text("${item.shortDescription}",
-                              maxLines: 10,
-                              style: TextStyle(fontSize: 13.0,color: Colors.black38)
-                          )
-                      ),
-                      Container(
-                          padding: const EdgeInsets.fromLTRB(20.0, 10.0, 10.0, 0.0),
-
-                          child: Text("${cart.currentshopId}",
                               maxLines: 10,
                               style: TextStyle(fontSize: 13.0,color: Colors.black38)
                           )
