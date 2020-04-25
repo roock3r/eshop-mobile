@@ -22,7 +22,7 @@ class Cart with ChangeNotifier {
     return total;
   }
 
-  void addItem(String productId, int shopId, double price, String title) {
+  void addItem(String productId, int shopId, double price, String title, int qty) {
     if (currentshopId == null) {
       currentshopId = shopId;
       if (_items.containsKey(productId)) {
@@ -35,7 +35,7 @@ class Cart with ChangeNotifier {
             shopId: existingCartItem.shopId,
             title: existingCartItem.title,
             price: existingCartItem.price,
-            quantity: existingCartItem.quantity + 1,
+            quantity: existingCartItem.quantity + ((qty > 1 ) ? qty : 1) ,
           ),
         );
       } else {
@@ -47,7 +47,7 @@ class Cart with ChangeNotifier {
             shopId: shopId,
             title: title,
             price: price,
-            quantity: 1,
+            quantity: ((qty > 1 ) ? qty : 1),
           ),
         );
       }
@@ -62,7 +62,7 @@ class Cart with ChangeNotifier {
             shopId: existingCartItem.shopId,
             title: existingCartItem.title,
             price: existingCartItem.price,
-            quantity: existingCartItem.quantity + 1,
+            quantity: existingCartItem.quantity + ((qty > 1 ) ? qty : 1),
           ),
         );
       } else {
@@ -74,7 +74,7 @@ class Cart with ChangeNotifier {
             shopId: shopId,
             title: title,
             price: price,
-            quantity: 1,
+            quantity: ((qty > 1 ) ? qty : 1),
           ),
         );
       }
@@ -95,7 +95,7 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeSingleItem(String productId) {
+  void removeSingleItem(String productId ,int qty) {
     if (!_items.containsKey(productId)) {
       return;
     }
@@ -108,7 +108,7 @@ class Cart with ChangeNotifier {
             shopId: existingCartItem.shopId,
             title: existingCartItem.title,
             price: existingCartItem.price,
-            quantity: existingCartItem.quantity - 1,
+            quantity: existingCartItem.quantity - ((qty > 1 ) ? qty : 1),
           ));
     } else {
       _items.remove(productId);

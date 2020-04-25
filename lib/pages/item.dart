@@ -28,7 +28,8 @@ class _ItemPageState extends State<ItemPage> {
   String _itemName;
   Shop shop;
   Item item;
-  int qty = 0;
+  int qty = 1;
+  int rmQty = 0;
 
   _ItemPageState(this._itemId,this._itemName,this.shop,this.item);
 
@@ -40,7 +41,7 @@ class _ItemPageState extends State<ItemPage> {
 
   void _decrementQty() {
     setState(() {
-      if(qty == 0 || qty < 0){
+      if(qty == 1 || qty < 1){
 
       }
       else {
@@ -51,8 +52,8 @@ class _ItemPageState extends State<ItemPage> {
 
   void _resetQty() {
     setState(() {
-
-        qty = 0;
+        rmQty = qty;
+        qty = 1;
 
     });
   }
@@ -309,20 +310,35 @@ class _ItemPageState extends State<ItemPage> {
                                                   textColor: Colors.amber.shade500,
                                                   onPressed: () {
                                                     if((cart.currentshopId == null) || (cart.currentshopId == shop.id) ) {
-                                                      cart.addItem(item.id.toString(), shop.id, item.price, item.name);
-                                                      _resetQty();
-                                                      _scaffoldKey.currentState.hideCurrentSnackBar();
-                                                      _scaffoldKey.currentState.showSnackBar(SnackBar(
-                                                        content: Text('Add item to cart'),
-                                                        duration: Duration(seconds: 2),
-                                                        action: SnackBarAction(
-                                                          label: 'UNDO',
-                                                          onPressed: () {
-                                                            cart.removeSingleItem(item.id.toString());
-                                                            _resetQty();
-                                                          },
-                                                        ),
-                                                      ));
+                                                      if(qty == 1) {
+                                                        cart.addItem(item.id.toString(), shop.id, item.price, item.name ,qty);
+                                                        _resetQty();
+                                                        _scaffoldKey.currentState.hideCurrentSnackBar();
+                                                        _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                                          content: Text('Added item to cart $rmQty'),
+                                                          duration: Duration(seconds: 2),
+                                                          action: SnackBarAction(
+                                                            label: 'UNDO',
+                                                            onPressed: () {
+                                                              cart.removeSingleItem(item.id.toString(), rmQty);
+                                                            },
+                                                          ),
+                                                        ));
+                                                      }else{
+                                                        cart.addItem(item.id.toString(), shop.id, item.price, item.name, qty);
+                                                        _resetQty();
+                                                        _scaffoldKey.currentState.hideCurrentSnackBar();
+                                                        _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                                          content: Text('Added items to cart $rmQty'),
+                                                          duration: Duration(seconds: 2),
+                                                          action: SnackBarAction(
+                                                            label: 'UNDO',
+                                                            onPressed: () {
+                                                              cart.removeSingleItem(item.id.toString(), rmQty);
+                                                            },
+                                                          ),
+                                                        ));
+                                                      }
                                                     }else {
                                                       _scaffoldKey.currentState.hideCurrentSnackBar();
                                                       _scaffoldKey.currentState.showSnackBar(SnackBar(
@@ -332,20 +348,48 @@ class _ItemPageState extends State<ItemPage> {
                                                           label: 'Reset Cart',
                                                           onPressed: () {
                                                             cart.clear();
-                                                            cart.addItem(item.id.toString(), shop.id, item.price, item.name);
-                                                            _resetQty();
-                                                            _scaffoldKey.currentState.hideCurrentSnackBar();
-                                                            _scaffoldKey.currentState.showSnackBar(SnackBar(
-                                                              content: Text('Add item to cart'),
-                                                              duration: Duration(seconds: 2),
-                                                              action: SnackBarAction(
-                                                                label: 'UNDO',
-                                                                onPressed: () {
-                                                                  cart.removeSingleItem(item.id.toString());
-                                                                  _resetQty();
-                                                                },
-                                                              ),
-                                                            ));
+//                                                            cart.addItem(item.id.toString(), shop.id, item.price, item.name, qty);
+//                                                            _resetQty();
+//                                                            _scaffoldKey.currentState.hideCurrentSnackBar();
+//                                                            _scaffoldKey.currentState.showSnackBar(SnackBar(
+//                                                              content: Text('Added item to cart'),
+//                                                              duration: Duration(seconds: 2),
+//                                                              action: SnackBarAction(
+//                                                                label: 'UNDO',
+//                                                                onPressed: () {
+//                                                                  cart.removeSingleItem(item.id.toString());
+//                                                                },
+//                                                              ),
+                                                            if(qty == 1) {
+                                                              cart.addItem(item.id.toString(), shop.id, item.price, item.name ,qty);
+                                                              _resetQty();
+                                                              _scaffoldKey.currentState.hideCurrentSnackBar();
+                                                              _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                                                content: Text('Added item to cart $rmQty'),
+                                                                duration: Duration(seconds: 2),
+                                                                action: SnackBarAction(
+                                                                  label: 'UNDO',
+                                                                  onPressed: () {
+                                                                    cart.removeSingleItem(item.id.toString(), rmQty);
+                                                                  },
+                                                                ),
+                                                              ));
+                                                            }else{
+                                                              cart.addItem(item.id.toString(), shop.id, item.price, item.name, qty);
+                                                              _resetQty();
+                                                              _scaffoldKey.currentState.hideCurrentSnackBar();
+                                                              _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                                                content: Text('Added items to cart $rmQty'),
+                                                                duration: Duration(seconds: 2),
+                                                                action: SnackBarAction(
+                                                                  label: 'UNDO',
+                                                                  onPressed: () {
+                                                                    cart.removeSingleItem(item.id.toString(), rmQty);
+                                                                  },
+                                                                ),
+                                                              ));
+                                                            }
+//                                                            ));
                                                           },
                                                         ),
                                                       ));
@@ -400,4 +444,8 @@ class _ItemPageState extends State<ItemPage> {
     );
     //return Container();
   }
+
+//  void dispose(){
+//    rmQty = 0;
+//  }
 }

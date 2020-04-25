@@ -13,6 +13,15 @@ class CartPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Your Cart'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.delete_forever),
+            tooltip: 'Clear Cart',
+            onPressed: () {
+              cart.clear();
+            },
+          )
+        ],
       ),
       body: Column(
         children: <Widget>[
