@@ -1,8 +1,15 @@
 import 'package:flutter/cupertino.dart';
+import 'package:bigshop/models/json/appShopModel.dart';
 import 'package:bigshop/models/json/appShopCartItemModel.dart';
 
 class Cart with ChangeNotifier {
   int currentshopId;
+  String currentshopPhone;
+  String userToken;
+  String phoneNumber;
+  String address;
+
+  Shop currentShop;
 
   Map<String, CartItem> _items = {};
 
@@ -22,9 +29,11 @@ class Cart with ChangeNotifier {
     return total;
   }
 
-  void addItem(String productId, int shopId, double price, String title, int qty) {
+  void addItem(String productId, int shopId, String shopPhone, double price, String title, int qty, Shop shop) {
     if (currentshopId == null) {
       currentshopId = shopId;
+      currentshopPhone = shopPhone;
+      currentShop = shop;
       if (_items.containsKey(productId)) {
         //change quantity.....
         _items.update(
@@ -91,6 +100,7 @@ class Cart with ChangeNotifier {
 
   void clear() {
     currentshopId = null;
+    currentshopPhone = null;
     _items = {};
     notifyListeners();
   }

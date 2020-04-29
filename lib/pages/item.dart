@@ -102,7 +102,6 @@ class _ItemPageState extends State<ItemPage> {
     }
 
     // set up the button
-
     return new Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -311,7 +310,7 @@ class _ItemPageState extends State<ItemPage> {
                                                   onPressed: () {
                                                     if((cart.currentshopId == null) || (cart.currentshopId == shop.id) ) {
                                                       if(qty == 1) {
-                                                        cart.addItem(item.id.toString(), shop.id, item.price, item.name ,qty);
+                                                        cart.addItem(item.id.toString(), shop.id, shop.phone, item.price, item.name ,qty,shop);
                                                         _resetQty();
                                                         _scaffoldKey.currentState.hideCurrentSnackBar();
                                                         _scaffoldKey.currentState.showSnackBar(SnackBar(
@@ -325,7 +324,7 @@ class _ItemPageState extends State<ItemPage> {
                                                           ),
                                                         ));
                                                       }else{
-                                                        cart.addItem(item.id.toString(), shop.id, item.price, item.name, qty);
+                                                        cart.addItem(item.id.toString(), shop.id, shop.phone, item.price, item.name, qty, shop);
                                                         _resetQty();
                                                         _scaffoldKey.currentState.hideCurrentSnackBar();
                                                         _scaffoldKey.currentState.showSnackBar(SnackBar(
@@ -361,7 +360,7 @@ class _ItemPageState extends State<ItemPage> {
 //                                                                },
 //                                                              ),
                                                             if(qty == 1) {
-                                                              cart.addItem(item.id.toString(), shop.id, item.price, item.name ,qty);
+                                                              cart.addItem(item.id.toString(), shop.id, shop.phone, item.price, item.name ,qty,shop);
                                                               _resetQty();
                                                               _scaffoldKey.currentState.hideCurrentSnackBar();
                                                               _scaffoldKey.currentState.showSnackBar(SnackBar(
@@ -375,7 +374,7 @@ class _ItemPageState extends State<ItemPage> {
                                                                 ),
                                                               ));
                                                             }else{
-                                                              cart.addItem(item.id.toString(), shop.id, item.price, item.name, qty);
+                                                              cart.addItem(item.id.toString(), shop.id, shop.phone, item.price, item.name, qty,shop);
                                                               _resetQty();
                                                               _scaffoldKey.currentState.hideCurrentSnackBar();
                                                               _scaffoldKey.currentState.showSnackBar(SnackBar(
