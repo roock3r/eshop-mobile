@@ -76,7 +76,7 @@ class _CartPageState extends State<CartPage> {
       onPressed:  () {
         FlutterOpenWhatsapp.sendSingleMessage('${cart.currentShop.phone}',
             'Bigshop : ${cart.currentShop.name} '
-            '\nItems Requested: Item id: ${cart.items.values.map((v) => v.itemId.toString())} Item: ${cart.items.values.map((v) => v.title.toString())} \n quantity: ${cart.items.values.map((v) => v.quantity.toString())} * Price: \$${cart.items.values.map((v) => v.price.toString())} '
+            '\nItems Requested: Item id: ${cart.items.values.map((v) => v.itemId.toString())} Item: ${cart.items.values.map((v) => v.title.toString())} \nQuantity: ${cart.items.values.map((v) => v.quantity.toString())} * Price: \$${cart.items.values.map((v) => v.price.toString())} '
             '\nTotal: \$${ cart.totalAmount }');
         cart.clear();
       },
