@@ -99,7 +99,7 @@ class _DashboardPageState extends State<DashboardPage> {
         itemBuilder: (context, index) {
           Shop shop = _shops[index];
           return ListTile(
-            leading: FlutterLogo(size: 72.0),
+            leading:  Image.network(shop.logo),
             title: Text('${shop.name}'),
             subtitle: Text('Address: ${shop.address} , Location: ${shop.location_info}, District: ${shop.district_info}'),
             trailing: Icon(Icons.arrow_right),

@@ -29,6 +29,7 @@ dependencies:
   font_awesome_flutter: ^8.7.0
   #flutter_launch: ^0.2.0
   flutter_open_whatsapp: ^0.1.2
+  getflutter: ^1.0.11
   carousel_slider: ^2.0.0
   video_player: ^0.10.9+1
   provider: ^3.0.0

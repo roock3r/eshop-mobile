@@ -268,6 +268,7 @@ class _ItemPageState extends State<ItemPage> {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
                                           // three line description
+                                          Row(),
                                           Row(
                                             children: <Widget>[
                                               new IconButton(

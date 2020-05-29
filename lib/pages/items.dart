@@ -4,6 +4,7 @@ import 'package:bigshop/pages/item.dart';
 import 'package:flutter/material.dart';
 import 'package:bigshop/common/widgets/pleaseWaitWidget.dart';
 import 'package:bigshop/common/apifunctions/requestItemsAPI.dart';
+import 'package:getflutter/getflutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'dart:convert';
@@ -109,13 +110,45 @@ class _ItemsPageState extends State<ItemsPage> {
         itemCount: _items != null ? _items.length : 0,
         itemBuilder: (context, index) {
           Item item = _items[index];
-          return ListTile(
-            title: Text('${item.name}'),
-//            subtitle: Text('Price: ${item.price.toString()}'),
-            trailing: Icon(Icons.arrow_right),
-            onTap: () => _navigateToItem(context, item.id, item.name,shop,item),
-//            onLongPress: () => _deleteEmployee(context, employee),
+          return GFCard(
+            boxFit: BoxFit.cover,
+            image: Image.network(item.image),
+            title: GFListTile(
+                title: Text(item.name),
+                icon: GFIconButton(
+                  onPressed: null,
+                  icon: Icon(Icons.attach_money),
+                  type: GFButtonType.transparent
+                )
+            ),
+//            content: Text("Some quick example text to build on the card"),
+            content: GFButtonBar(
+              alignment: WrapAlignment.start,
+              children: <Widget>[
+                GFButton(
+                  icon: Icon(Icons.add_shopping_cart),
+                  onPressed: () {},
+                  text: 'Add to cart',
+                ),
+                GFButton(
+                  icon: Icon(Icons.description),
+                  onPressed: ()  => _navigateToItem(context, item.id, item.name,shop,item),
+                  text: 'View Item',
+                ),
+              ],
+            ),
           );
+
+
+//          return ListTile(
+//            title: Text('${item.name}'),
+////            subtitle: Text('Price: ${item.price.toString()}'),
+//            trailing: Icon(Icons.arrow_right),
+//            onTap: () => _navigateToItem(context, item.id, item.name,shop,item),
+////            onLongPress: () => _deleteEmployee(context, employee),
+//          );
+
+
         });
     Widget bodyWidget = _pleaseWait ? Stack(key: ObjectKey("stack"),children: <Widget>[_pleaseWaitWidget, builder],): Stack(key: ObjectKey("stack"),children: [builder]);
 
