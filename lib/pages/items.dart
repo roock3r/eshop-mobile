@@ -110,30 +110,53 @@ class _ItemsPageState extends State<ItemsPage> {
         itemCount: _items != null ? _items.length : 0,
         itemBuilder: (context, index) {
           Item item = _items[index];
+//          return GFCard(
+//            boxFit: BoxFit.cover,
+//            image: Image.network(item.image),
+//            title: GFListTile(
+//                title: Text(item.price.toString()),
+//                icon: GFIconButton(
+//                  onPressed: null,
+//                  icon: Icon(Icons.attach_money),
+//                  type: GFButtonType.transparent,
+//                )
+//            ),
+//            content: Text(item.name),
+//            buttonBar: GFButtonBar(
+//              alignment: WrapAlignment.start,
+//              children: <Widget>[
+//                GFButton(
+//                  icon: Icon(Icons.description),
+//                  onPressed: ()  => _navigateToItem(context, item.id, item.name,shop,item),
+//                  text: 'View Item',
+//                ),
+//              ],
+//            ),
+//          );
+
           return GFCard(
             boxFit: BoxFit.cover,
-            image: Image.network(item.image),
+
             title: GFListTile(
-                title: Text(item.name),
+                avatar:GFAvatar(
+                    backgroundImage:NetworkImage(shop.logo)
+                ),
+                title: Text(shop.name),
                 icon: GFIconButton(
                   onPressed: null,
-                  icon: Icon(Icons.attach_money),
-                  type: GFButtonType.transparent
+                  icon: Icon(Icons.info),
+                  type: GFButtonType.transparent,
                 )
             ),
-//            content: Text("Some quick example text to build on the card"),
-            content: GFButtonBar(
+            image: Image.network(item.image),
+            content:Text(item.name),
+            buttonBar: GFButtonBar(
               alignment: WrapAlignment.start,
               children: <Widget>[
                 GFButton(
-                  icon: Icon(Icons.add_shopping_cart),
-                  onPressed: () {},
-                  text: 'Add to cart',
-                ),
-                GFButton(
-                  icon: Icon(Icons.description),
-                  onPressed: ()  => _navigateToItem(context, item.id, item.name,shop,item),
+                  onPressed: () => _navigateToItem(context, item.id, item.name,shop,item),
                   text: 'View Item',
+                  shape: GFButtonShape.pills,
                 ),
               ],
             ),

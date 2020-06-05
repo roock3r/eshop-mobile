@@ -6,8 +6,10 @@ class Cart with ChangeNotifier {
   int currentshopId;
   String currentshopPhone;
   String userToken;
-  String phoneNumber;
-  String address;
+  String userOrderType;
+  String userPhoneNumber;
+  String userAddress;
+  List<CartItem> orderDetails;
 
   Shop currentShop;
 
@@ -125,5 +127,14 @@ class Cart with ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Map<String, dynamic> toJson() => {
+    "access_token": userToken,
+    "restaurant_id": currentshopId,
+    "phone": userPhoneNumber,
+    "order_type": userOrderType,
+    "address": userAddress,
+    "order_details": List<dynamic>.from(items.values.map((x) => x.toJson())),
+  };
 
 }

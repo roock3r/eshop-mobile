@@ -1,12 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
 import 'package:bigshop/common/providers/orders.dart';
-//import 'package:flutter_launch/flutter_launch.dart';
-import 'package:flutter_open_whatsapp/flutter_open_whatsapp.dart';
+
 import 'package:bigshop/common/providers/cart.dart';
 import 'package:bigshop/common/widgets/cart_item.dart' as ci;
+import 'package:url_launcher/url_launcher.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -14,34 +16,9 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  String _platformVersion = 'Unknown';
-
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await FlutterOpenWhatsapp.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
@@ -55,10 +32,35 @@ class _CartPageState extends State<CartPage> {
       },
     );
 
+    void launchWhatsAppCart({
+      @required String phone,
+      @required String message,
+    }) async {
+      String url() {
+        phone = cart.currentShop.phone;
+        message =
+            "Bigshop Ref: \nHi ${cart.currentShop.name} I would like to order the following items\n"
+                "Items Requested: Item id: ${cart.items.values.map((v) => v.itemId.toString())} Item: ${cart.items.values.map((v) => v.title.toString())} \nQuantity: ${cart.items.values.map((v) => v.quantity.toString())} * Price: \$${cart.items.values.map((v) => v.price.toString())}"
+                "\nTotal: \$${ cart.totalAmount }";
+        if (Platform.isIOS) {
+          return "whatsapp://wa.me/${cart.currentShop.phone}/?text=${Uri.encodeFull(message)}";
+        } else {
+          return "whatsapp://send?phone=${cart.currentShop.phone}&text=${Uri.encodeFull(message)}";
+        }
+      }
+
+      if (await canLaunch(url())) {
+        await launch(url());
+      } else {
+        throw 'Could not launch ${url()}';
+      }
+    }
+
     // set up the AlertDialog
     AlertDialog emptyCartAlert = AlertDialog(
       title: Text("Empty Cart Notice"),
-      content: Text("Kindly add an item to your cart so that you can place an order."),
+      content: Text(
+          "Kindly add an item to your cart so that you can place an order."),
       actions: [
         okButton,
       ],
@@ -67,29 +69,42 @@ class _CartPageState extends State<CartPage> {
     // set up the buttons
     Widget cancelButton = FlatButton(
       child: Text("Cancel"),
-      onPressed:  () {
+      onPressed: () {
         Navigator.of(context).pop();
       },
     );
     Widget whatsappButton = FlatButton(
-      child: Text("Whatsapp"),
-      onPressed:  () {
-        FlutterOpenWhatsapp.sendSingleMessage('${cart.currentShop.phone}',
-            'Bigshop : ${cart.currentShop.name} '
-            '\nItems Requested: Item id: ${cart.items.values.map((v) => v.itemId.toString())} Item: ${cart.items.values.map((v) => v.title.toString())} \nQuantity: ${cart.items.values.map((v) => v.quantity.toString())} * Price: \$${cart.items.values.map((v) => v.price.toString())} '
-            '\nTotal: \$${ cart.totalAmount }');
-        cart.clear();
+      child: Text("WhatsApp"),
+      onPressed: () {
+//          whatsAppOpen();
+//        FlutterLaunch.launchWathsApp(phone: "${cart.currentShop.phone}", message: "test");
+
+        //IPhone
+//        FlutterLaunch.launchWathsApp(phone: "${cart.currentShop.phone}", message: "Bigshop : ${cart.currentShop.name} "
+//            "\nItems Requested: Item id: ${cart.items.values.map((v) => v.itemId.toString())} Item: ${cart.items.values.map((v) => v.title.toString())} \nQuantity: ${cart.items.values.map((v) => v.quantity.toString())} * Price: \$${cart.items.values.map((v) => v.price.toString())} "
+//            "\nTotal: \$${ cart.totalAmount }");
+
+//        //Android
+//        FlutterOpenWhatsapp.sendSingleMessage('${cart.currentShop.phone}',
+//            'Bigshop : ${cart.currentShop.name} '
+//            '\nItems Requested: Item id: ${cart.items.values.map((v) => v.itemId.toString())} Item: ${cart.items.values.map((v) => v.title.toString())} \nQuantity: ${cart.items.values.map((v) => v.quantity.toString())} * Price: \$${cart.items.values.map((v) => v.price.toString())} '
+//            '\nTotal: \$${ cart.totalAmount }');
+        String cartToJson(Cart cart) => json.encode(cart.toJson());
+        print(cartToJson(cart));
+        launchWhatsAppCart();
+        //cart.clear();
       },
     );
     Widget directButton = FlatButton(
       child: Text("Direct"),
-      onPressed:  () {},
+      onPressed: () {},
     );
 
     // set up the AlertDialog
     AlertDialog orderTypeAlert = AlertDialog(
       title: Text("Order Using ?"),
-      content: Text("How do you wish to place your order ? Via Whatsapp or directly through the app ?"),
+      content: Text(
+          "How do you wish to place your order ? Via WhatsApp or directly through the app ?"),
       actions: [
         cancelButton,
         whatsappButton,
@@ -132,14 +147,14 @@ class _CartPageState extends State<CartPage> {
                       '\$${cart.totalAmount.toStringAsFixed(2)}',
                       style: TextStyle(
                           color:
-                          Theme.of(context).primaryTextTheme.title.color),
+                              Theme.of(context).primaryTextTheme.title.color),
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   FlatButton(
                     child: Text('ORDER NOW'),
                     onPressed: () {
-                      if(cart.totalAmount > 0 ){
+                      if (cart.totalAmount > 0) {
 //                        Provider.of<Orders>(context, listen: false).addOrder(
 //                          cart.items.values.toList(),
 //                          cart.totalAmount,
@@ -150,7 +165,7 @@ class _CartPageState extends State<CartPage> {
                             return orderTypeAlert;
                           },
                         );
-                      }else{
+                      } else {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {

@@ -16,4 +16,14 @@ class CartItem {
     @required this.quantity,
     @required this.price,
   });
+
+  factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
+    itemId: json["meal_id"],
+    quantity: json["quantity"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "meal_id": itemId,
+    "quantity": quantity,
+  };
 }
