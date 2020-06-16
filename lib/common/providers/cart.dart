@@ -1,15 +1,31 @@
 import 'package:flutter/cupertino.dart';
+import 'package:bigshop/common/functions/getToken.dart';
 import 'package:bigshop/models/json/appShopModel.dart';
 import 'package:bigshop/models/json/appShopCartItemModel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Cart with ChangeNotifier {
+
   int currentshopId;
   String currentshopPhone;
   String userToken;
   String userOrderType;
   String userPhoneNumber;
   String userAddress;
-  List<CartItem> orderDetails;
+
+  Cart() {
+//    setup();
+    getToken().then((result) {
+      userToken = result;
+      notifyListeners();
+    });
+  }
+
+//  void setup() async {
+//    SharedPreferences preferences = await SharedPreferences.getInstance();
+//    String _token = await preferences.getString("LastAccessToken");
+//  }
+
 
   Shop currentShop;
 

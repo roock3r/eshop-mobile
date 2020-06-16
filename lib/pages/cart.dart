@@ -16,8 +16,13 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  TextEditingController address;
+  TextEditingController phone;
+
   @override
   void initState() {
+    address = new TextEditingController();
+    phone = new TextEditingController();
     super.initState();
   }
 
@@ -40,8 +45,8 @@ class _CartPageState extends State<CartPage> {
         phone = cart.currentShop.phone;
         message =
             "Bigshop Ref: \nHi ${cart.currentShop.name} I would like to order the following items\n"
-                "Items Requested: Item id: ${cart.items.values.map((v) => v.itemId.toString())} Item: ${cart.items.values.map((v) => v.title.toString())} \nQuantity: ${cart.items.values.map((v) => v.quantity.toString())} * Price: \$${cart.items.values.map((v) => v.price.toString())}"
-                "\nTotal: \$${ cart.totalAmount }";
+            "Items Requested: Item id: ${cart.items.values.map((v) => v.itemId.toString())} Item: ${cart.items.values.map((v) => v.title.toString())} \nQuantity: ${cart.items.values.map((v) => v.quantity.toString())} * Price: \$${cart.items.values.map((v) => v.price.toString())}"
+            "\nTotal: \$${cart.totalAmount}";
         if (Platform.isIOS) {
           return "whatsapp://wa.me/${cart.currentShop.phone}/?text=${Uri.encodeFull(message)}";
         } else {
@@ -66,6 +71,7 @@ class _CartPageState extends State<CartPage> {
       ],
     );
 
+
     // set up the buttons
     Widget cancelButton = FlatButton(
       child: Text("Cancel"),
@@ -73,31 +79,240 @@ class _CartPageState extends State<CartPage> {
         Navigator.of(context).pop();
       },
     );
+
+    _textInputDialog(BuildContext context) async {
+      return showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Enter Address and Phone'),
+              content: Column(
+                children: <Widget>[
+                  new Expanded(
+                    child: new TextField(
+                      autofocus: true,
+                      keyboardType: TextInputType.multiline,
+                      decoration: new InputDecoration(
+                          labelText: 'Home Address',
+                          hintText: 'eg. # 5982 Raccoon Street, Belize City',
+                          suffixIcon: Icon(Icons.home)),
+                      controller: address,
+                    ),
+                  ),
+                  new Expanded(
+                    child: new TextField(
+                      autofocus: true,
+                      keyboardType: TextInputType.phone,
+                      decoration: new InputDecoration(
+                          labelText: 'Phone Number',
+                          hintText: 'eg. 5016660000',
+                          suffixIcon: Icon(Icons.phone)),
+                      controller: phone,
+                    ),
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                cancelButton,
+                new FlatButton(
+                  child: new Text('Submit & Continue'),
+                  onPressed: () {
+                    setState(() {
+                      cart.userAddress = address.text;
+                      cart.userPhoneNumber = phone.text;
+                    });
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            );
+          });
+    }
+
     Widget whatsappButton = FlatButton(
       child: Text("WhatsApp"),
       onPressed: () {
-//          whatsAppOpen();
-//        FlutterLaunch.launchWathsApp(phone: "${cart.currentShop.phone}", message: "test");
-
-        //IPhone
-//        FlutterLaunch.launchWathsApp(phone: "${cart.currentShop.phone}", message: "Bigshop : ${cart.currentShop.name} "
-//            "\nItems Requested: Item id: ${cart.items.values.map((v) => v.itemId.toString())} Item: ${cart.items.values.map((v) => v.title.toString())} \nQuantity: ${cart.items.values.map((v) => v.quantity.toString())} * Price: \$${cart.items.values.map((v) => v.price.toString())} "
-//            "\nTotal: \$${ cart.totalAmount }");
-
-//        //Android
-//        FlutterOpenWhatsapp.sendSingleMessage('${cart.currentShop.phone}',
-//            'Bigshop : ${cart.currentShop.name} '
-//            '\nItems Requested: Item id: ${cart.items.values.map((v) => v.itemId.toString())} Item: ${cart.items.values.map((v) => v.title.toString())} \nQuantity: ${cart.items.values.map((v) => v.quantity.toString())} * Price: \$${cart.items.values.map((v) => v.price.toString())} '
-//            '\nTotal: \$${ cart.totalAmount }');
         String cartToJson(Cart cart) => json.encode(cart.toJson());
         print(cartToJson(cart));
         launchWhatsAppCart();
         //cart.clear();
       },
     );
+
     Widget directButton = FlatButton(
       child: Text("Direct"),
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).pop();
+        _textInputDialog(context);
+//        _showDialog() async {
+//          await
+//          Navigator.of(context).pop();
+//          showDialog<String>(
+//            context: context,
+//            child: new _SystemPadding(child: new AlertDialog(
+//              contentPadding: const EdgeInsets.all(16.0),
+//              content: new Row(
+//                children: <Widget>[
+//                  new Expanded(
+//                    child: new TextField(
+//                      autofocus: true,
+//                      decoration: new InputDecoration(
+//                          labelText: 'Home Address', hintText: 'eg. # 5982 Raccoon Street, Belize City'),
+//                      controller: address,
+//                    ),
+//                  ),
+//                  new Expanded(
+//                    child: new TextField(
+//                      autofocus: true,
+//                      decoration: new InputDecoration(
+//                          labelText: 'Phone Number', hintText: 'eg. 5016660000'),
+//                      controller: phone,
+//                    ),
+//                  ),
+//                ],
+//              ),
+//              actions: <Widget>[
+//                new FlatButton(
+//                    child: const Text('CANCEL'),
+//                    onPressed: () {
+//                      Navigator.pop(context);
+//                    }),
+//                new FlatButton(
+//                    child: const Text('OPEN'),
+//                    onPressed: () {
+//                      Navigator.pop(context);
+//                    })
+//              ],
+//            ),),
+//          );
+//        }
+
+//        showDialog(
+//            child: new Dialog(
+//              shape: RoundedRectangleBorder(
+//                borderRadius: BorderRadius.circular(12.0),
+//              ),
+//              child: Container(
+//                decoration: BoxDecoration(
+//                  borderRadius: BorderRadius.circular(20.0),
+//                ),
+//                height: 300.0,
+//                width: 300.0,
+//                child: Stack(
+//                  children: <Widget>[
+//                    Container(
+//                      width: double.infinity,
+//                      height: 300,
+//                      decoration: BoxDecoration(
+//                        color: Colors.grey[100],
+//                        borderRadius: BorderRadius.circular(12.0),
+//                      ),
+//                    ),
+//                    Container(
+//                      width: double.infinity,
+//                      height: 50,
+//                      alignment: Alignment.bottomCenter,
+//                      decoration: BoxDecoration(
+//                        color: Colors.greenAccent,
+//                        borderRadius: BorderRadius.only(
+//                          topLeft: Radius.circular(12),
+//                          topRight: Radius.circular(12),
+//                        ),
+//                      ),
+//                      child: Align(
+//                        alignment: Alignment.center,
+//                        child: Text(
+//                          "Set address and phone!",
+//                          style: TextStyle(
+//                              color: Colors.white,
+//                              fontSize: 20,
+//                              fontWeight: FontWeight.w600),
+//                        ),
+//                      ),
+//                    ),
+//                    Align(
+//                      alignment: Alignment.bottomCenter,
+//                      child: InkWell(
+//                        onTap: () {
+//                          Navigator.pop(context);
+//                        },
+//                        child: Container(
+//                          width: double.infinity,
+//                          height: 50,
+//                          decoration: BoxDecoration(
+//                            color: Colors.blue[300],
+//                            borderRadius: BorderRadius.only(
+//                              bottomLeft: Radius.circular(12),
+//                              bottomRight: Radius.circular(12),
+//                            ),
+//                          ),
+//                          child: Align(
+//                            alignment: Alignment.center,
+//                            child: Text(
+//                              "Okay let's go! ",
+//                              style: TextStyle(
+//                                  color: Colors.white,
+//                                  fontSize: 20,
+//                                  fontWeight: FontWeight.w600),
+//                            ),
+//                          ),
+//                        ),
+//                      ),
+//                    ),
+//                    Align(
+//                      // These values are based on trial & error method
+//                      alignment: Alignment(1.05, -1.05),
+//                      child: InkWell(
+//                        onTap: () {
+//                          Navigator.pop(context);
+//                        },
+//                        child: Container(
+//                          decoration: BoxDecoration(
+//                            color: Colors.grey[200],
+//                            borderRadius: BorderRadius.circular(12),
+//                          ),
+//                          child: Icon(
+//                            Icons.close,
+//                            color: Colors.black,
+//                          ),
+//                        ),
+//                      ),
+//                    ),
+//                  ],
+//                ),
+//              ),
+//            ),
+
+
+//            child: new Dialog(
+//
+//              child: new Column(
+//                children: <Widget>[
+//                  new TextField(
+//                    decoration:
+//                        new InputDecoration(hintText: "Add Address for Order"),
+//                    controller: address,
+//                  ),
+//                  new TextField(
+//                    decoration: new InputDecoration(
+//                        hintText: "Add a Phone Number for Order"),
+//                    controller: phone,
+//                  ),
+//                  new FlatButton(
+//                    child: new Text("Save"),
+//                    onPressed: () {
+//                      setState(() {
+//                        cart.userAddress = address.text;
+//                        cart.userPhoneNumber = phone.text;
+//                      });
+//                      Navigator.pop(context);
+//                    },
+//                  )
+//                ],
+//              ),
+//            ),
+            //context: context);
+      },
     );
 
     // set up the AlertDialog
@@ -110,7 +325,11 @@ class _CartPageState extends State<CartPage> {
         whatsappButton,
         directButton,
       ],
+      //Add dialog to ask for users address and phone number for submission via
+      //The API
     );
+
+
 
     return Scaffold(
       appBar: AppBar(
