@@ -157,7 +157,6 @@ class Cart with ChangeNotifier {
       "phone": userPhoneNumber,
       "order_type": userOrderType,
       "address": userAddress,
-      // "order_details": List<dynamic>.from(items.values.map((x) => x.toJson()))
       "order_details":
           jsonEncode(List<dynamic>.from(items.values.map((x) => x.toJson())))
               .toString()
