@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,9 @@ import 'package:bigshop/common/providers/cart.dart';
 import 'package:bigshop/common/widgets/cart_item.dart' as ci;
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:http/http.dart' as HTTP;
+import 'package:http/http.dart';
+
 class CartPage extends StatefulWidget {
   @override
   _CartPageState createState() => _CartPageState();
@@ -18,6 +22,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   TextEditingController address;
   TextEditingController phone;
+  static const _TIMEOUT = Duration(seconds: 10);
 
   @override
   void initState() {
@@ -71,7 +76,6 @@ class _CartPageState extends State<CartPage> {
       ],
     );
 
-
     // set up the buttons
     Widget cancelButton = FlatButton(
       child: Text("Cancel"),
@@ -79,6 +83,70 @@ class _CartPageState extends State<CartPage> {
         Navigator.of(context).pop();
       },
     );
+
+    Future<dynamic> postOrder(Cart cart) async {
+      final uri = 'https://bigshop.silvatech.org/api/customer/order/add/';
+//
+      // String cartToJson(Cart cart) => json.encode(cart.toJson());
+      // print(cartToJson(cart).toString().replaceAll(r'''\''', ''));
+
+      // Map<String, String> headers = {
+      //   "Content-Type": "application/x-www-form-urlencoded"
+      // };
+
+      // final response = await HTTP
+      //     .post(uri, headers: headers, body: json.encode(cart.toJson()))
+      //     .timeout(_TIMEOUT);
+
+      // if (response.statusCode == 200) {
+      //   print('one');
+      //   return json.decode(response.body);
+      // } else {
+      //   // if that response was not okay , throw an error
+      //   print('two');
+      //   print(response.body);
+      // }
+
+      postData() async {
+        var dio = Dio();
+        try {
+          FormData formData = new FormData.fromMap(cart.toMap());
+//
+//          print(cart.toJson());
+//          print(json.encode(cart.toJson()));
+//          print(json.encode(cart.toJson()).toString());
+//          print("\"${json.encode(cart.toJson()['order_details']).toString()}\"");
+//          print(cart.toMap());
+//          print(cart.toString());
+//
+//
+////          String order = json.encode(List<dynamic>.from(cart.items.values.map((x) => x.toJson())));
+////          String order_2 = "\"${order}\"";
+////
+//          FormData formData = new FormData.fromMap({
+//            "access_token": cart.userToken,
+//            "restaurant_id": "${cart.currentshopId}",
+//            "phone": cart.userPhoneNumber,
+//            "order_type": "Direct",
+//            "address": cart.userAddress,
+//            "order_details": "\"${json.encode(cart.toJson()['order_details']).toString()}\""
+////            "order_details": "[{\"meal_id\":\"15\",\"quantity\":1}]"
+//          });
+//
+//
+          var response = await dio.post(uri, data: formData);
+
+          print(response.statusCode);
+          print(response.data);
+
+          return response.data;
+        } catch (e) {
+          print(e);
+        }
+      }
+
+      postData();
+    }
 
     _textInputDialog(BuildContext context) async {
       return showDialog(
@@ -120,6 +188,12 @@ class _CartPageState extends State<CartPage> {
                     setState(() {
                       cart.userAddress = address.text;
                       cart.userPhoneNumber = phone.text;
+                    });
+                    cart.userOrderType = 'Direct';
+                    postOrder(cart).then((result) {
+                      print(result);
+                    }).catchError((onError) {
+                      print(onError);
                     });
                     Navigator.pop(context);
                   },
@@ -283,7 +357,6 @@ class _CartPageState extends State<CartPage> {
 //              ),
 //            ),
 
-
 //            child: new Dialog(
 //
 //              child: new Column(
@@ -311,7 +384,7 @@ class _CartPageState extends State<CartPage> {
 //                ],
 //              ),
 //            ),
-            //context: context);
+        //context: context);
       },
     );
 
@@ -328,8 +401,6 @@ class _CartPageState extends State<CartPage> {
       //Add dialog to ask for users address and phone number for submission via
       //The API
     );
-
-
 
     return Scaffold(
       appBar: AppBar(
@@ -374,10 +445,10 @@ class _CartPageState extends State<CartPage> {
                     child: Text('ORDER NOW'),
                     onPressed: () {
                       if (cart.totalAmount > 0) {
-//                        Provider.of<Orders>(context, listen: false).addOrder(
-//                          cart.items.values.toList(),
-//                          cart.totalAmount,
-//                        );
+                        Provider.of<Orders>(context, listen: false).addOrder(
+                          cart.items.values.toList(),
+                          cart.totalAmount,
+                        );
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
