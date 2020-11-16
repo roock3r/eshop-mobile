@@ -84,26 +84,23 @@ class _CartPageState extends State<CartPage> {
       },
     );
 
-    Future<dynamic> postOrder(Cart cart) async {
+    Future<dynamic> postOrder(BuildContext context, Cart cart) async {
       final uri = 'https://bigshop.silvatech.org/api/customer/order/add/';
 
-      postData() async {
-        var dio = Dio();
-        try {
-          FormData formData = new FormData.fromMap(cart.toMap());
+      var dio = Dio();
 
-          var response = await dio.post(uri, data: formData);
+      try {
+        FormData formData = new FormData.fromMap(cart.toMap());
+        print(formData.toString());
+        var response = await dio.post(uri, data: formData);
 
-          print(response.statusCode);
-          print(response.data);
+        print(response.statusCode);
+        print(response.data);
 
-          return response.data;
-        } catch (e) {
-          print(e);
-        }
+        return response.data;
+      } catch (e) {
+        print(e);
       }
-
-      postData();
     }
 
     _textInputDialog(BuildContext context) async {
@@ -147,9 +144,32 @@ class _CartPageState extends State<CartPage> {
                       cart.userAddress = address.text;
                       cart.userPhoneNumber = phone.text;
                     });
+
                     cart.userOrderType = 'Direct';
-                    postOrder(cart).then((result) {
-                      print(result);
+
+                    postOrder(context, cart).then((result) {
+                      if (result['status'] == "success") {
+                        print(result['message']);
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return emptyCartAlert;
+                          },
+                        );
+                        cart.clear();
+                        //todo
+
+                      } else if (result['status'] == "failed") {
+                        print(result['error']);
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return emptyCartAlert;
+                          },
+                        );
+
+                        //todo
+                      }
                     }).catchError((onError) {
                       print(onError);
                     });
