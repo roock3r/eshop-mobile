@@ -138,9 +138,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthState>(
-        builder: (context, value, child) {
-      return value.isLoggedIn ? HomePage() : Scaffold(
+    return Scaffold(
       body:SingleChildScrollView(
         child:Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
@@ -189,5 +187,5 @@ class _WelcomePageState extends State<WelcomePage> {
           ),
       ),
     );
-  });
+  }
 }
