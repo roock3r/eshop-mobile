@@ -12,6 +12,7 @@ import 'package:bigshop/models/json/Token.dart';
 
 class AuthState extends ChangeNotifier {
   bool _isLoggedIn;
+  bool _tokenStatus;
   User _user;
   String _error;
   String _token;
@@ -32,8 +33,34 @@ class AuthState extends ChangeNotifier {
     _checkIsLoggedIn();
   }
 
+  // Future<bool> _verifyToken(String token) async {
+  //   var verificationUrl = AppConstants.apiRoute + "verify/";
+  //   try {
+  //     Map<String, String> body = {
+  //       'token': "${token}",
+  //     };
+  //     var res = await http.post(
+  //       verificationUrl,
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: json.encode(body),
+  //     );
+  //     if (res.statusCode == 200) {
+  //       return Future.value(true);
+  //     } else if (res.statusCode == 400){
+  //       return Future.value(false);
+  //     }else if (res.statusCode == 401){
+  //       return Future.value(false);
+  //     } else{
+  //       throw ('Did not respond properly');
+  //       badStatusCode(res);
+  //     }
+  //   } catch (e) {
+  //     throw (e);
+  //   }
+  // }
+
   Future<User> _getAccount(String token) async {
-    var userUrl = AppConstants.apiRoute + "me";
+    var userUrl = AppConstants.apiRoute + "me/";
     try {
       final dynamic res = await http.get(
         userUrl,
@@ -43,7 +70,7 @@ class AuthState extends ChangeNotifier {
         var body = jsonDecode(res.body);
         return User.fromJson(body['user']);
       } else {
-        throw ('Did not respond properly');
+        badStatusCode(res);
       }
     } catch (e) {
       throw (e);
@@ -52,26 +79,32 @@ class AuthState extends ChangeNotifier {
 
   _checkIsLoggedIn() async {
     try {
+      // _tokenStatus = _verifyToken(_token);
+      // print(_token);
       _user = await _getAccount(_token);
+      print(_token);
       _isLoggedIn = true;
       notifyListeners();
     } catch (e) {
       print(e);
     }
   }
-  // logout() async {
-  //   try {
-  //     Response res = await account.deleteSession(sessionId: 'current');
-  //     _isLoggedIn = false;
-  //     _user = null;
-  //     notifyListeners();
-  //   } catch (e) {
-  //     _error = e.message;
-  //     notifyListeners();
-  //   }
-  // }
 
-  login(String username, String password) async {
+
+  logout() async {
+    try {
+      // Response res = await account.deleteSession(sessionId: 'current');
+      _token = null;
+      _isLoggedIn = false;
+      _user = null;
+      notifyListeners();
+    } catch (e) {
+      _error = e.message;
+      notifyListeners();
+    }
+  }
+
+  Future<dynamic> login(String username, String password) async {
     final loginUrl = AppConstants.apiRoute + "token/";
     try {
       Map<String, String> body = {
@@ -91,14 +124,17 @@ class AuthState extends ChangeNotifier {
         _isLoggedIn = true;
         _user = await _getAccount(_token);
         notifyListeners();
+        return json.decode(response);
+      }else{
+        badStatusCode(result);
       }
     } catch (e) {
-      print(e);
+       throw (e.toString());
     }
   }
 
   Future<dynamic> createAccount(String username, String password, String email, String firstName, String lastName) async {
-    final registerUrl = AppConstants.apiRoute + "register";
+    final registerUrl = AppConstants.apiRoute + "register/";
     try {
       Map<String, String> body = {
         'username': "${username}",
@@ -110,22 +146,19 @@ class AuthState extends ChangeNotifier {
       var result = await http.post(registerUrl, headers: {'Content-Type': 'application/json'}, body: json.encode(body) );
       if (result.statusCode == 200) {
         final response = json.decode(result.body);
-        print(response);
         notifyListeners();
         return response;
       }else{
-        print(result);
         badStatusCode(result);
       }
     } catch (e) {
-      print(e);
-      badStatusCode(e);
+      throw (e.toString());
     }
   }
 
   badStatusCode(Response response){
     debugPrint("Bad status code ${response.statusCode} returned from server.");
     debugPrint("Response body ${response.body} returned from server.");
-    throw Exception('Bad status code ${response.statusCode} returned from server.');
+    throw ('Bad status code ${response.statusCode} with message: ${response.body} returned from server.');
   }
 }

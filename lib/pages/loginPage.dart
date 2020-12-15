@@ -1,12 +1,16 @@
-import 'package:bigshop/auth.dart';
-import 'package:bigshop/pages/home.dart';
 import 'package:flutter/material.dart';
-import 'package:bigshop/pages/signup.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:bigshop/auth.dart';
+
 import 'package:bigshop/common/widgets/bezierContainer.dart';
-import 'package:provider/provider.dart';
+import 'package:bigshop/common/widgets/pleaseWaitWidget.dart';
+
+import 'package:bigshop/pages/home.dart';
+import 'package:bigshop/pages/signup.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title}) : super(key: key);
@@ -18,9 +22,49 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool _isLoading = false;
+
+  bool _pleaseWait = false;
+  bool _btnEnabled = false;
+
+  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final PleaseWaitWidget _pleaseWaitWidget =
+  PleaseWaitWidget(key: ObjectKey("pleaseWaitWidget"));
+
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  _showSnackBar(String content, {bool error = false}) {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content:
+      Text('${error ? "An unexpected error occured: " : ""}${content}'),
+    ));
+  }
+
+  _showPleaseWait(bool b) {
+    setState(() {
+      _pleaseWait = b;
+    });
+  }
+
+  _loginUser(BuildContext context) {
+    _showPleaseWait(true);
+    try {
+      SystemChannels.textInput.invokeMethod('TextInput.hide');
+      AuthState state = Provider.of<AuthState>(context, listen: false);
+      state
+          .login(_userNameController.text, _passwordController.text)
+          .then((response) {
+        _showPleaseWait(false);
+      }).catchError((error) {
+        _showPleaseWait(false);
+        _showSnackBar(error.toString(), error: true);
+      });
+    } catch (e) {
+      _showPleaseWait(false);
+      _showSnackBar(e.toString(), error: true);
+    }
+  }
 
   Widget _backButton() {
     return InkWell(
@@ -43,7 +87,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _entryField(String title, TextEditingController controller ,{bool isPassword = false}) {
+  Widget _entryField(String title, TextEditingController controller,
+      {bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -56,7 +101,11 @@ class _LoginPageState extends State<LoginPage> {
           SizedBox(
             height: 10,
           ),
-          TextField(
+          TextFormField(
+              autovalidateMode: AutovalidateMode.always,
+              onChanged: (val) {
+                isEmpty();
+              },
               controller: controller,
               obscureText: isPassword,
               decoration: InputDecoration(
@@ -68,43 +117,19 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-
-  Widget _submitButton() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(vertical: 15),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.grey.shade200,
-                offset: Offset(2, 4),
-                blurRadius: 5,
-                spreadRadius: 2)
-          ],
-          gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Theme.of(context).accentColor, Theme.of(context).primaryColor])),
-      child: RaisedButton(
-        onPressed: (){
-          setState(() {
-            _isLoading = true;
-          });
-          SystemChannels.textInput.invokeMethod('TextInput.hide');
-          AuthState state =
-          Provider.of<AuthState>(context, listen: false);
-          state.login(
-              _userNameController.text,
-              _passwordController.text);
-        },
-        child: Text(
-          'Login ',
-          style: TextStyle(fontSize: 20, color: Colors.white),
-        ),
-      ),
-    );
+  Widget _newSubmitButton() {
+    return GFButton(
+        onPressed: _btnEnabled == true
+            ? () {
+          _loginUser(context);
+        }
+            : null,
+        onLongPress: () {},
+        text: "Login",
+        icon: Icon(Icons.login),
+        type: GFButtonType.solid,
+        blockButton: true,
+        size: GFSize.LARGE);
   }
 
   Widget _divider() {
@@ -211,7 +236,9 @@ class _LoginPageState extends State<LoginPage> {
             Text(
               'Register',
               style: TextStyle(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme
+                      .of(context)
+                      .primaryColor,
                   fontSize: 13,
                   fontWeight: FontWeight.w600),
             ),
@@ -227,10 +254,15 @@ class _LoginPageState extends State<LoginPage> {
       text: TextSpan(
           text: 'B',
           style: GoogleFonts.roboto(
-            textStyle: Theme.of(context).textTheme.display1,
+            textStyle: Theme
+                .of(context)
+                .textTheme
+                .display1,
             fontSize: 60,
             fontWeight: FontWeight.w700,
-            color: Theme.of(context).accentColor,
+            color: Theme
+                .of(context)
+                .accentColor,
           ),
           children: [
             TextSpan(
@@ -239,7 +271,10 @@ class _LoginPageState extends State<LoginPage> {
             ),
             TextSpan(
               text: 'shop',
-              style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 50),
+              style: TextStyle(
+                  color: Theme
+                      .of(context)
+                      .primaryColor, fontSize: 50),
             ),
           ]),
     );
@@ -249,56 +284,91 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       children: <Widget>[
         _entryField("Username", _userNameController),
-        _entryField("Password", _passwordController,isPassword: true),
+        _entryField("Password", _passwordController, isPassword: true),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    return Consumer<AuthState>(
-        builder: (context, value, child) {
-          return value.isLoggedIn ? HomePage() : Scaffold(
-        body: Container(
-      height: height,
-      child: Stack(
-        children: <Widget>[
-          Positioned(
-              top: -height * .15,
-              right: -MediaQuery.of(context).size.width * .4,
-              child: BezierContainer()),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(height: height * .2),
-                  _title(),
-                  SizedBox(height: 50),
-                  _emailPasswordWidget(),
-                  SizedBox(height: 20),
-                  _submitButton(),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    alignment: Alignment.centerRight,
-                    child: Text('Forgot Password ?',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w500)),
-                  ),
-                  // _divider(),
-                  // _facebookButton(),
-                  SizedBox(height: height * .055),
-                  _createAccountLabel(),
-                ],
+    final height = MediaQuery
+        .of(context)
+        .size
+        .height;
+
+
+    Widget _main() {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: height * .2),
+              _title(),
+              SizedBox(height: 50),
+              _emailPasswordWidget(),
+              SizedBox(height: 20),
+              // _submitButton(),
+              _newSubmitButton(),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                alignment: Alignment.centerRight,
+                child: Text('Forgot Password ?',
+                    style: TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w500)),
               ),
-            ),
+              // _divider(),
+              // _facebookButton(),
+              SizedBox(height: height * .055),
+              _createAccountLabel(),
+            ],
           ),
-          Positioned(top: 40, left: 0, child: _backButton()),
-        ],
-      ),
-    ));});
+        ),
+      );
+    }
+
+    Widget bodyWidget = _pleaseWait ? _pleaseWaitWidget : Stack(
+      key: ObjectKey("stack"), children: [_main()],);
+
+    return Consumer<AuthState>(builder: (context, value, child) {
+      return value.isLoggedIn
+          ? HomePage()
+          : Scaffold(
+          key: _scaffoldKey,
+          body: Container(
+            height: height,
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                    top: -height * .15,
+                    right: -MediaQuery
+                        .of(context)
+                        .size
+                        .width * .4,
+                    child: BezierContainer()),
+                bodyWidget,
+                Positioned(top: 40, left: 0, child: _backButton()),
+              ],
+            ),
+          ));
+    });
+  }
+
+  bool isEmpty() {
+    setState(() {
+      if ((_userNameController.text != " ") &&
+          (_passwordController.text != " ") &&
+          (_userNameController != null) &&
+          (_passwordController != null) &&
+          (_userNameController.text.length > 5) &&
+          (_passwordController.text.length > 5)) {
+        _btnEnabled = true;
+      } else {
+        _btnEnabled = false;
+      }
+    });
+    return _btnEnabled;
   }
 }
