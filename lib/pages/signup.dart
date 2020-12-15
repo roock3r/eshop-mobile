@@ -5,8 +5,8 @@ import 'package:bigshop/common/widgets/bezierContainer.dart';
 import 'package:bigshop/pages/loginPage.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:provider/provider.dart';
-import 'package:bigshop/common/widgets/pleaseWaitWidget.dart';
 
 import '../routes.dart';
 
@@ -49,7 +49,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _entryField(String title, TextEditingController controller, {bool isPassword = false}) {
+  Widget _entryField(String title, String label, TextEditingController controller, {bool isPassword = false,  bool isPasswordConfirm = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -62,15 +62,41 @@ class _SignUpPageState extends State<SignUpPage> {
           SizedBox(
             height: 10,
           ),
-          TextField(
+          TextFormField(
               controller: controller,
               obscureText: isPassword,
               decoration: InputDecoration(
+                  labelText: label,
                   border: InputBorder.none,
                   fillColor: Color(0xfff3f3f4),
-                  filled: true))
+                  filled: true),
+           )
         ],
       ),
+    );
+  }
+  Widget _newSubmitButton(){
+    return GFButton(
+        onPressed: (){
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+          AuthState state =
+          Provider.of<AuthState>(context, listen: false);
+          state.createAccount(
+            _username.text,
+            _password.text,
+            _email.text,
+            _firstName.text,
+            _lastName.text,
+          ).then((response){
+            Navigator.pushNamed(context, AppRoutes.login);
+          });
+        },
+        onLongPress: (){},
+        text: "Register Now",
+        icon: Icon(Icons.app_registration),
+        type: GFButtonType.solid,
+        blockButton: true,
+        size: GFSize.LARGE
     );
   }
 
@@ -178,11 +204,12 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget _emailPasswordWidget() {
     return Column(
       children: <Widget>[
-        _entryField("Username", _username),
-        _entryField("First Name", _firstName),
-        _entryField("Last Name", _lastName),
-        _entryField("Email Address", _email),
-        _entryField("Password",_password, isPassword: true),
+        _entryField("Username", "Please enter your username", _username),
+        _entryField("First Name", "Please enter your first name",  _firstName),
+        _entryField("Last Name", "Please enter your last name",_lastName),
+        _entryField("Email Address", "Please enter a valid email", _email),
+        _entryField("Password","Please enter your password over 8 characters",_password, isPassword: true),
+        // _entryField("Password Confirmation"," Please confirm your Confirm password ",_password2, isPassword: true),
       ],
     );
 
@@ -221,7 +248,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           SizedBox(
                             height: 20,
                           ),
-                          _submitButton(),
+                          //_submitButton(),
+                          _newSubmitButton(),
                           SizedBox(height: height * .14),
                           _loginAccountLabel(),
                         ],
