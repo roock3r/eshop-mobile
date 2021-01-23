@@ -1,4 +1,4 @@
-# bigshop
+# eshop
 
 A new Flutter ecomerce shopping application.
 
